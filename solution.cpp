@@ -17,6 +17,7 @@ struct TreeNode {
 class Solution {
 private:
     unordered_map<int, pair<int, int>> nodeInfo; // value -> {depth, parent}
+    vector<TreeNode*> nodes; // Store all nodes for cleanup
     
     // Parse extended binary tree from preorder traversal
     TreeNode* buildTree(vector<int>& values, int& index) {
@@ -26,6 +27,7 @@ private:
         }
         
         TreeNode* root = new TreeNode(values[index]);
+        nodes.push_back(root); // Store for cleanup
         index++;
         root->left = buildTree(values, index);
         root->right = buildTree(values, index);
@@ -39,6 +41,14 @@ private:
         nodeInfo[root->val] = {depth, parent};
         recordNodeInfo(root->left, depth + 1, root->val);
         recordNodeInfo(root->right, depth + 1, root->val);
+    }
+    
+    // Clean up allocated memory
+    void cleanup() {
+        for (TreeNode* node : nodes) {
+            delete node;
+        }
+        nodes.clear();
     }
     
 public:
@@ -92,6 +102,9 @@ public:
                 cout << 0 << endl;
             }
         }
+        
+        // Clean up memory
+        cleanup();
     }
 };
 
